@@ -56,13 +56,34 @@ import streamlit as st
 # program (started via "streamlit run app.py", not "python rag_chat.py").
 from dotenv import load_dotenv
 
+# os lets us read/write "environment variables" — a plain dict-like store
+# every running program has access to. This is where the Groq SDK looks
+# for GROQ_API_KEY; it has no idea what Streamlit's secrets system is.
+import os
+
 from rag_chat import answer_question
 
 # This must run BEFORE any code that needs GROQ_API_KEY — since
 # everything in this file runs top-to-bottom on every re-run, putting it
 # here at the very top guarantees the key is loaded before st.chat_input
 # further down ever has a chance to trigger a Groq() call.
+#
+# On your own machine, this line finds your local .env file and loads
+# GROQ_API_KEY from it into os.environ — done, nothing else needed.
 load_dotenv()
+
+# On Streamlit Cloud, there IS no .env file (you never uploaded one — it's
+# in .gitignore on purpose), so the load_dotenv() line above quietly does
+# nothing there. Streamlit Cloud instead gives you the key through
+# st.secrets, which reads whatever you pasted into the app's Settings ->
+# Secrets box. The three lines below bridge the gap: "if this key exists
+# in Streamlit's secrets, copy it into os.environ too" — the exact same
+# place load_dotenv() would have put it locally. After this runs, it does
+# not matter to the rest of the code (or to rag_chat.py) whether the key
+# came from a local .env file or from Streamlit Cloud's secrets — either
+# way, os.environ["GROQ_API_KEY"] is set, and Groq() finds it the same way.
+if "GROQ_API_KEY" in st.secrets:
+    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
 
 
 # ==========================================================================
