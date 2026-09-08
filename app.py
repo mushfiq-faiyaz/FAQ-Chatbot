@@ -82,8 +82,11 @@ load_dotenv()
 # not matter to the rest of the code (or to rag_chat.py) whether the key
 # came from a local .env file or from Streamlit Cloud's secrets — either
 # way, os.environ["GROQ_API_KEY"] is set, and Groq() finds it the same way.
-if "GROQ_API_KEY" in st.secrets:
-    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+try:
+    if "GROQ_API_KEY" in st.secrets:
+        os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+except FileNotFoundError:
+    pass
 
 
 # ==========================================================================
