@@ -12,8 +12,7 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Vector database storage (ChromaDB)
-chroma_db/
+
 
 # Optional: Ignore your local source documents if they contain private data
 # docs/
